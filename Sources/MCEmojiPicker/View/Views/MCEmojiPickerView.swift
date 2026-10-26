@@ -202,6 +202,11 @@ final class MCEmojiPickerView: UIView {
     }
     
     private func setupCategoryViews() {
+        // `draw(_:)` isn't guaranteed to run only once (e.g. a popover's presentation/sizing pass,
+        // or a trait-collection change, can trigger it again) — without this guard, each extra
+        // call appended a whole second set of category icons into the same `.fillEqually` stack,
+        // squeezing all of them down (see https://github.com/izyumkin/MCEmojiPicker/issues/40).
+        guard categoryViews.isEmpty else { return }
         for categoryIndex in 0...emojiCategoryTypes.count - 1 {
             let categoryView = MCTouchableEmojiCategoryView(
                 delegate: self,
